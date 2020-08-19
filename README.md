@@ -83,6 +83,9 @@ We calculate the stringValue which can represent the list in a string format at 
 on the arraylist afterward will result in iterating through the same list twice.
 In the end, we return the NumberList which contains both the list and its string value.
 
+2. isPermutation
+checks if a list is a permutation of another list. It's used in the tests to verify the permutations.
+
 
 ### Part two - Adding persistence layer
 We would like to have persistence of the data in case the server drops.
