@@ -1,12 +1,13 @@
 package com.backbase.assignment.service.impl;
 
+import com.backbase.assignment.entity.ArrayEntity;
 import com.backbase.assignment.exception.ArrayNotFoundException;
 import com.backbase.assignment.exception.InvalidNumbersException;
 import com.backbase.assignment.model.NumberList;
 import com.backbase.assignment.service.ArrayPermutationService;
+import com.backbase.assignment.service.ArrayService;
 import com.backbase.assignment.util.NumbersUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,8 +34,10 @@ public class ArrayPermutationServiceImpl implements ArrayPermutationService {
 
     private static long id = 0L;
 
+    @Autowired
+    private ArrayService arrayService;
+
     @Override
-    @Cacheable(value = "ids")
     public String storeArray(String numbers) {
         NumberList numberList = NumbersUtil.convertToList(numbers);
         List<Integer> numList = numberList.getNumList();
@@ -57,6 +60,23 @@ public class ArrayPermutationServiceImpl implements ArrayPermutationService {
             throw new ArrayNotFoundException("Cannot find array with id " + id);
 
         List<Integer> permutation = new ArrayList<>(idToList.get(id));
+        Collections.shuffle(permutation);
+        return permutation.toString();
+    }
+
+    @Override
+    public String storeArrayInDB(String numbers) {
+        NumberList numberList = NumbersUtil.convertToList(numbers);
+        ArrayEntity arrayEntity = new ArrayEntity();
+        arrayEntity.setNumbers(numberList.getNumList());
+        arrayEntity.setNumbersString(numberList.getStringValue());
+        return String.valueOf(arrayService.saveArray(arrayEntity).getId());
+    }
+
+    @Override
+    public String getPermutationByIdFromDB(long id) {
+        ArrayEntity arrayEntity = arrayService.findArrayById(id);
+        List<Integer> permutation = arrayEntity.getNumbers();
         Collections.shuffle(permutation);
         return permutation.toString();
     }

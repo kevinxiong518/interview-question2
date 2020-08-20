@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.backbase.assignment.entity.ArrayEntity;
 import com.backbase.assignment.exception.ArrayNotFoundException;
 import com.backbase.assignment.exception.InvalidNumbersException;
 import com.backbase.assignment.util.NumbersUtil;
@@ -12,10 +13,14 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +70,9 @@ public class ArrayPermutationServiceTest {
 
     @SpyBean
     private Map<Long, List<Integer>> idToList;
+    
+    @MockBean
+    private ArrayService arrayService;
 
     @Autowired
     private ArrayPermutationService arrayPermutationService;
@@ -126,6 +134,32 @@ public class ArrayPermutationServiceTest {
         long id = 3;
         List<Integer> l1 = idToList.get(id);
         String permutation = arrayPermutationService.getPermutationById(id);
+        List<Integer> l2 = NumbersUtil.convertToList(permutation.substring(1, permutation.length() - 1)).getNumList();
+        assertTrue(NumbersUtil.isPermutation(l1, l2));
+    }
+
+    @Test
+    public void testStoreArrayInDB(){
+        ArrayEntity arrayEntity = new ArrayEntity();
+        arrayEntity.setNumbersString("1,3,5");
+        arrayEntity.setNumbers(Arrays.asList(1,3,5));
+        Mockito.when(arrayService.saveArray(arrayEntity)).
+                thenReturn(new ArrayEntity(1L, Arrays.asList(1,3,5), "1,3,5"));
+
+        assertEquals(String.valueOf(1), arrayPermutationService.storeArrayInDB("1,3,5"));
+    }
+
+    @Test
+    public void testGetPermutationFromDB() {
+        long id = 2;
+        ArrayEntity arrayEntity = new ArrayEntity();
+        arrayEntity.setId(id);
+        List<Integer> l1 = Arrays.asList(1,3,5,7,11);
+        arrayEntity.setNumbers(l1);
+        arrayEntity.setNumbersString("1,3,5,7,11");
+        Mockito.when(arrayService.findArrayById(id)).thenReturn(arrayEntity);
+
+        String permutation = arrayPermutationService.getPermutationByIdFromDB(id);
         List<Integer> l2 = NumbersUtil.convertToList(permutation.substring(1, permutation.length() - 1)).getNumList();
         assertTrue(NumbersUtil.isPermutation(l1, l2));
     }

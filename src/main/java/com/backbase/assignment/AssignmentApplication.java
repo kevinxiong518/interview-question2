@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@EntityScan(basePackages = {"com.backbase.assignment.persistence"})  // scan JPA entities
+@EntityScan(basePackages = {"com.backbase.assignment.entity"})  // scan JPA entities
 public class AssignmentApplication {
 
     public static void main(String[] args) {

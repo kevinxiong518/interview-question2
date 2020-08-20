@@ -19,12 +19,14 @@ public class ArrayPermutationController {
         if (Strings.isEmpty(numbers))
             throw new MissingNumbersException("numbers parameter is required.");
 
-        return arrayPermutationService.storeArray(numbers);
+//        return arrayPermutationService.storeArrayInDB(numbers);
+        return arrayPermutationService.storeArrayInDB(numbers);
     }
 
     @GetMapping("/permutation")
     public String getPermutationById(@RequestParam(name = "id") long id) {
-        return arrayPermutationService.getPermutationById(id);
+//        return arrayPermutationService.getPermutationById(id);
+        return arrayPermutationService.getPermutationByIdFromDB(id);
     }
 
 }

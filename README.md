@@ -22,15 +22,15 @@ a random permutation of the array (e.g., `2,3,6,7,1,3,5`)
 Implementation:
 
 - ArrayPermutationController
-It maps the request url to the corresponding service method and validate the query parameters if necessary.
+maps the request url to the corresponding service method and validate the query parameters if necessary.
 
-1. storeArray:
-Receives numbers as a string of comma separated values, a 400 response will be returned 
+1. storeArray
+receives numbers as a string of comma separated values, a 400 response will be returned 
 if numbers parameter is not present. Numbers param will be passed in and validated
 before we store it into memory, a 400 response will be returned if any non-integer value found in numbers.
 
-2. getPermutationById:
-Receives ID as a long type if it's not present or its value is not valid, a 400 response will be returned.
+2. getPermutationById
+receives ID as a long type if it's not present or its value is not valid, a 400 response will be returned.
 The value is passed into the service method which returns a random permutation of the array with that ID.
 
 
@@ -58,7 +58,7 @@ See implementation details in ArrayPermutationServiceImpl.
 We use maps to store the arrays and ids as it gives us constant access time (O(1)) by key.
 
 1. storeArray
-Receives numbers as input, then calls the method in NumbersUtil to convert it into an NumberList
+receives numbers as input, then calls the method in NumbersUtil to convert it into an NumberList
 which contains the list to store and its string value.
 It adds an extra service level validation to make sure numbers parameter is present (just in case 
 it's used in classes other than ArrayPermutationController).
@@ -67,7 +67,7 @@ against arrayToId map and retain the corresponding ID if it exists already.
 In the end, we increment the value of the ID and put the pair into idToList and listStringToId maps respectively.
 
 2. getPermutationById
-Receives ID as input, then checks if that ID exists in idToArray map, an ArrayNotFoundException will be thrown
+receives ID as input, then checks if that ID exists in idToArray map, an ArrayNotFoundException will be thrown
 if the given id cannot be found. 
 After we retrieve array from the map, we create a copy of that array 
 then calls Collections.shuffle() (performance O(n) with n being the size of the array) to randomize it.
@@ -76,7 +76,7 @@ In the end, we return that array.
 
 - NumbersUtil
 1. convertToList
-Receives numbers as input, convert it into a string array first by splitting it using comma.
+receives numbers as input, convert it into a string array first by splitting it using comma.
 We parse each string in the array into an integer with Integer.parseInt() and store the integers into a list.
 If any of those strings is not an integer, we throw an InvalidateNumbersException. 
 We calculate the stringValue which can represent the list in a string format at the same time, using toString(O(n)) 
@@ -99,6 +99,32 @@ return an ID of the array (e.g., 1)
 a random permutation of the array (e.g., `2,3,6,7,1,3,5`)
 Restarting the spring-boot app and Sending `http://localhost:5000/permutation?id=1` 
 should give back a random permutation of the array (e.g., `2,3,6,7,1,3,5`)
+
+- ArrayEntity
+contains 3 fields: "id", numbers for storing the array and numbersString for storing array's string value.
+
+
+- CustomArrayRepositoryImpl
+1. findArraysByNumbersString
+returns an ArrayEntity by the string value of the array.
+
+
+- ArrayPermutationServiceImpl
+1. storeArrayInDB
+stores an ArrayEntity then returns its ID.
+
+2. getPermutationByIdFromDB
+retrieves an ArrayEntity from database then returns its permutation.
+
+
+- ArrayServiceImpl
+1. saveArray
+saves a new ArrayEntity in case there's no ArrayEntity with the same numbersString value,
+otherwise returns the ArrayEntity with the same numbersString value.
+
+2. findArrayById
+returns an ArrayEntity by ID, throws an ArrayNotFoundException in case it does not exist.
+
 
 ## Guidelines
 * Fork this repository and push your commits
